@@ -4,8 +4,8 @@ export default class Map {
 
     protected game: Phaser.Game;
 
-    protected floors: Phaser.Group;
-    protected walls: Phaser.Group;
+    floors: Phaser.Group;
+    walls: Phaser.Group;
     protected floorImage: string;
     protected wallImage: string;
 
@@ -40,15 +40,15 @@ export default class Map {
         let lastRoomCoords = { x: 0, y: 0 };
 
         //Create walls across the whole world
-        for (var y=0; y<this.game.world.height; y+= 16) {
-            for (var x=0; x<this.game.world.width; x+=16) {
-                var wall = this.walls.create(x, y, this.wallImage);
+        for (let y=0; y<this.game.world.height; y+= 16) {
+            for (let x=0; x<this.game.world.width; x+=16) {
+                let wall = this.walls.create(x, y, this.wallImage);
                 wall.body.immovable = true;
             }
         }
         
         //Creating the rooms
-        for (var r=0; r<this.maxRoomNumber; r++) {
+        for (let r=0; r<this.maxRoomNumber; r++) {
             let w = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
             let h = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
     
@@ -60,11 +60,10 @@ export default class Map {
             this.roomArray.push(room);
             console.log(room);
 
-            if (this.numRooms == 0) {            
+            if (this.numRooms === 0) {            
                 //playState.player.x = x + (w/2);
                 //playState.player.y = y + (h/2);
-            } 
-            else {
+            } else {
                 let new_x = Phaser.Math.snapToFloor(x + (w/2), 16);
                 let new_y = Phaser.Math.snapToFloor(y + (h/2), 16);
     

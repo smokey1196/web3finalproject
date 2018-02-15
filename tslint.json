@@ -65,8 +65,7 @@
     "no-trailing-whitespace": false,
     "arrow-parens": true,
     "comment-format": [
-      true,
-      "check-space"
+      true
     ],
     "interface-name": [
       true,
@@ -80,7 +79,7 @@
       "as-needed"
     ],
     "whitespace": [
-      true,
+      false,
       "check-branch",
       "check-decl",
       "check-operator",
