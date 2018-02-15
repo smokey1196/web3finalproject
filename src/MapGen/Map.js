@@ -1,9 +1,5 @@
 "use strict";
 
-//require('pixi');    // Because Phaser use PIXI and p2 as global variables, they must be imported first.
-//require('p2');
-//require('phaser');
-
 class Map {
     constructor(game) {
         this.game = game;
@@ -98,8 +94,7 @@ class Map {
     
                 var prev_x = this.game.math.snapToFloor(this.lastRoomCoords.x, 16);
                 var prev_y = this.game.math.snapToFloor(this.lastRoomCoords.y, 16);
-    
-                this.createHTunnel(prev_x, new_x, prev_y, prev_y);
+                this.createHTunnel(prev_x, new_x, prev_y);
                 this.createVTunnel(prev_y, new_y, new_x);
             }
     
