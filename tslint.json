@@ -30,7 +30,6 @@
     "variable-name": [
       true,
       "ban-keywords",
-      "check-format",
       "allow-leading-underscore"
     ],
     "trailing-comma": [
@@ -45,7 +44,7 @@
       "never"
     ],
     "no-consecutive-blank-lines": [
-      true,
+      false,
       2
     ],
     "class-name": true,
@@ -60,10 +59,10 @@
     "use-isnan": true,
     "eofline": true,
     "linebreak-style": [
-      true,
+      false,
       "LF"
     ],
-    "no-trailing-whitespace": true,
+    "no-trailing-whitespace": false,
     "arrow-parens": true,
     "comment-format": [
       true,
