@@ -16,7 +16,7 @@ export default class MainState extends State {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.map = new Map(this.game, 'floor', 'wall', 5, 7, 8);
-    this.map.generateMap();
+    this.map.generateMap(true);
 
     this.player = this.game.add.sprite(this.map.roomArray[0].centerX, this.map.roomArray[0].centerY, 'player');  
     this.player.anchor.setTo(0.5);     

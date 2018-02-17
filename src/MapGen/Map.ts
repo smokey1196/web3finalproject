@@ -31,7 +31,7 @@ export default class Map {
     }
 
     //makes the map
-    generateMap(){
+    generateMap(genStartRoom?: boolean, genLastRoom?: boolean){
 
         this.floors = this.game.add.group();
         this.walls = this.game.add.group();
@@ -46,14 +46,37 @@ export default class Map {
                 wall.body.immovable = true;
             }
         }
-        
+
         //Creating the rooms
         for (let r=0; r<this.maxRoomNumber; r++) {
-            let w = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
-            let h = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
+
+            let w: number = 0;
+            let h: number = 0;
+            let x: number = 0;
+            let y: number = 0;
+
+
+            //Generate the first room so that nothing overlaps it
+            if (genStartRoom && r === 0){
+                console.log('generating a starting room!');
+                w = this.maxRoomSize * 16;
+                h = this.maxRoomSize * 16;
+                
+                //needs to be a multiple of whatever the floor px size is
+                x = 4 * 16;
+                y = 4 * 16;
+
+            } else {
+                console.log('is false');
+                w = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
+                h = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
     
-            let x = this.getRandom(1, ((this.game.world.width) / 16) - (w/16 + 1)) * 16;
-            let y = this.getRandom(1, ((this.game.world.height) / 16) - (w/16 + 1)) * 16;
+                x = this.getRandom(1, ((this.game.world.width) / 16) - (w/16 + 1)) * 16;
+                y = this.getRandom(1, ((this.game.world.height) / 16) - (w/16 + 1)) * 16;
+
+                console.log(this.getRandom(1, ((this.game.world.width) / 16) - (w/16 + 1)));
+            }
+            
     
             this.createRoom(x, x+w, y, y+h);
             let room = new Room(x, y, w, h);
