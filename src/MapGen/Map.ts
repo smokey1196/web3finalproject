@@ -65,7 +65,8 @@ export default class Map {
                 //needs to be a multiple of whatever the floor px size is
                 x = 4 * 16;
                 y = 4 * 16;
-
+            
+            //Generate random coords for the other rooms
             } else {
                 console.log('is false');
                 w = this.getRandom(this.minRoomSize, this.maxRoomSize) * 16;
@@ -77,16 +78,13 @@ export default class Map {
                 console.log(this.getRandom(1, ((this.game.world.width) / 16) - (w/16 + 1)));
             }
             
-    
+            //Create the room then add it to rooms array so it can be referenced later
             this.createRoom(x, x+w, y, y+h);
             let room = new Room(x, y, w, h);
             this.roomArray.push(room);
             console.log(room);
 
-            if (this.numRooms === 0) {            
-                //playState.player.x = x + (w/2);
-                //playState.player.y = y + (h/2);
-            } else {
+            if (this.numRooms !== 0) {            
                 let new_x = Phaser.Math.snapToFloor(x + (w/2), 16);
                 let new_y = Phaser.Math.snapToFloor(y + (h/2), 16);
     
@@ -96,8 +94,8 @@ export default class Map {
                 this.createHTunnel(prev_x, new_x, prev_y);
                 this.createVTunnel(prev_y, new_y, new_x);
                 //console.log(new_x, new_y, prev_x, prev_y);
-            }
-    
+            } 
+            
             lastRoomCoords = { x: x + (w/2), y: y + (h/2) };
             this.numRooms++;
         }
@@ -131,6 +129,8 @@ export default class Map {
         let max = Math.max(x1, x2);
         for (let x = min; x<max+8; x+=8) {
             this.createFloor(x, y);
+            this.createFloor(x, y + 16);
+
         } 
     }
     //Create a Vertical tunnel to connect two rooms
@@ -139,6 +139,7 @@ export default class Map {
         let max = Math.max(y1, y2);
         for (let y = min; y<max+8; y+=8) {
             this.createFloor(x, y);
+            this.createFloor(x + 16, y);
         } 
     }
 }
