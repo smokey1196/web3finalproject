@@ -1,3 +1,12 @@
+/*
+Pieces of this algorithm derived from
+http://perplexingtech.weebly.com/game-dev-blog/a-random-dungeon-generator-for-phaserjs
+which is based off of a python tutorial from
+www.roguebasin.com
+
+Also bits were inspired/taken from
+https://gamedevelopment.tutsplus.com/tutorials/create-a-procedurally-generated-dungeon-cave-system--gamedev-10099 (haxe)
+*/
 import Room from './Room';
 
 export default class Map {
