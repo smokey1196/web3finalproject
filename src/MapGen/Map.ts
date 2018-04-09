@@ -59,12 +59,13 @@ export default class Map {
         }
 
         //Creating the rooms
-        for (let r=0; r<this.maxRoomNumber; r++) {
+        for (let r=0; r<this.maxRoomNumber;) {
 
             let w: number = 0;
             let h: number = 0;
             let x: number = 0;
             let y: number = 0;
+            let intersected: boolean = false;
 
 
             //Generate the first room so that nothing overlaps it
@@ -79,7 +80,7 @@ export default class Map {
             
             //Generate random coords for the other rooms
             } else {
-                console.log('is false');
+                //console.log('is false');
                 w = this.getRandom(this.minRoomSize, this.maxRoomSize) * this.tileSize;
                 h = this.getRandom(this.minRoomSize, this.maxRoomSize) * this.tileSize;
     
@@ -90,25 +91,35 @@ export default class Map {
             }
             
             //Create the room then add it to rooms array so it can be referenced later
-            this.createRoom(x, x+w, y, y+h);
             let room = new Room(x, y, w, h);
-            this.roomArray.push(room);
-            console.log(room);
+            for(let i=0; i < this.roomArray.length; i++){
+                if(!intersected && room.intersects(this.roomArray[i], 8)){
+                    intersected = true;
+                }
+            }
+            if(!intersected){
+                this.createRoom(x, x+w, y, y+h);
+                this.roomArray.push(room);
+                r++;
+                //console.log(room); 
 
-            if (this.numRooms !== 0) {            
-                let new_x = Phaser.Math.snapToFloor(x + (w/2), this.tileSize);
-                let new_y = Phaser.Math.snapToFloor(y + (h/2), this.tileSize);
-    
-                let prev_x = Phaser.Math.snapToFloor(lastRoomCoords.x, this.tileSize);
-                let prev_y = Phaser.Math.snapToFloor(lastRoomCoords.y, this.tileSize);
+                if (this.numRooms !== 0) {            
+                    let new_x = Phaser.Math.snapToFloor(x + (w/2), this.tileSize);
+                    let new_y = Phaser.Math.snapToFloor(y + (h/2), this.tileSize);
+        
+                    let prev_x = Phaser.Math.snapToFloor(lastRoomCoords.x, this.tileSize);
+                    let prev_y = Phaser.Math.snapToFloor(lastRoomCoords.y, this.tileSize);
+                    
+                    this.createHTunnel(prev_x, new_x, prev_y);
+                    this.createVTunnel(prev_y, new_y, new_x);
+                    //console.log(new_x, new_y, prev_x, prev_y);
+                } 
                 
-                this.createHTunnel(prev_x, new_x, prev_y);
-                this.createVTunnel(prev_y, new_y, new_x);
-                //console.log(new_x, new_y, prev_x, prev_y);
-            } 
-            
-            lastRoomCoords = { x: x + (w/2), y: y + (h/2) };
-            this.numRooms++;
+                lastRoomCoords = { x: x + (w/2), y: y + (h/2) };
+                this.numRooms++;
+            }
+            console.log('looped');
+    
         }
 
     }

@@ -2,16 +2,23 @@
 /** Imports */
 import State from './state';
 import Map from '../MapGen/Map';
+import Slime from '../sprites/enemies/slime';
+import EnemyGroup from '../sprites/enemyGroup';
+import Enemy from '../sprites/enemy';
+import Player from '../sprites/player';
 
 // The main state of the game
 export default class MainState extends State {
 
-  player: Phaser.Sprite;
+  player: Player;
   map: Map;
-  cursors: Phaser.CursorKeys;
+  //cursors: Phaser.CursorKeys;
 
-  enemy1: Phaser.Sprite;
+  enemy1: Slime;
   enemy2: Phaser.Sprite;
+  hit: boolean = false;
+  enemyGroup: EnemyGroup;
+
 
   create(): void {
     // Phaser supports some physical engines (p2, box2d, ninja and arcate).
@@ -20,54 +27,58 @@ export default class MainState extends State {
     this.game.world.setBounds(0, 0, 3200, 2400);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+    //this.cursors = this.game.input.keyboard.createCursorKeys();
 
-    this.map = new Map(this.game, 'floor', 'wall', 3, 5, 20);
+    this.map = new Map(this.game, 'floor', 'wall', 4, 6, 15);
     this.map.generateMap(true);
 
-    this.player = this.game.add.sprite(this.map.roomArray[0].centerX, this.map.roomArray[0].centerY, 'player');  
-    this.player.anchor.setTo(0.5);
-    this.game.physics.arcade.enable(this.player);
-    this.game.camera.follow(this.player);
+    this.player = new Player(this.game, this.map.roomArray[0].centerX, this.map.roomArray[0].centerY, 'player');
+    this.game.add.existing(this.player);
 
-    this.enemy1 = this.game.add.sprite(this.map.roomArray[3].centerX, this.map.roomArray[3].centerY, 'enemy');
-    this.enemy1.anchor.setTo(0.5);
-    this.game.physics.arcade.enable(this.enemy1);
+    //this was above the map causing the sprites to not show, only 20 hours to figure that out :(
+    this.enemyGroup = this.game.add.group();
 
-    this.enemy2 = this.game.add.sprite(this.map.roomArray[2].centerX, this.map.roomArray[2].centerY, 'enemy');
-    this.enemy2.anchor.setTo(0.5);
-    this.game.physics.arcade.enable(this.enemy2);
+    this.enemy1 = new Slime(this.game, this.map.roomArray[0].centerX + 150, this.map.roomArray[0].centerY, 'slime', false); 
+    this.enemy2 = new Slime(this.game, this.map.roomArray[1].centerX, this.map.roomArray[1].centerY - 100, 'slime', false); 
 
+    this.enemyGroup.add(this.enemy1);
+    this.enemyGroup.add(this.enemy2);
    
   }
   update(): void {
+
+    
     //Collision between player and walls
     this.game.physics.arcade.collide(this.player, this.map.walls);
+    this.game.physics.arcade.collide(this.enemyGroup, this.map.walls);
+    this.game.physics.arcade.collide(this.enemyGroup, this.enemyGroup);
 
-    if (this.cursors.left.isDown) {
-        this.player.body.velocity.x = -200;
-    } else if (this.cursors.right.isDown) {
-        this.player.body.velocity.x = 200;
+    //enemy track player
+    if (!this.game.physics.arcade.collide(this.player, this.enemyGroup) && !this.hit){
+        this.enemyGroup.forEach(this.trackPlayer, this, true, this.player);
+        
     } else {
-        this.player.body.velocity.x = 0;
-    }
-    
-    if (this.cursors.up.isDown) {
-        this.player.body.velocity.y = -200;
-    } else if (this.cursors.down.isDown) {
-        this.player.body.velocity.y = 200;
-    } else {
-        this.player.body.velocity.y = 0;
+        this.hit = true;
+        this.enemyGroup.forEach(this.knockbacked, this, true);
+        this.game.time.events.add(500, function(){
+            this.hit = false;
+        }, this);
     }
 
   }
+  //for debugging
   render(){
-    //For debuging
-    /*
-    this.game.debug.body(this.player);
-    this.map.walls.forEach(this.game.debug.body, this.game.debug, true);
-    */
+    //this.game.debug.body(this.player);
+    //this.game.debug.body(this.enemy1);
+    //this.enemyGroup.forEach(this.game.debug.body, this.game.debug, true);
+    //this.map.walls.forEach(this.game.debug.body, this.game.debug, true);
+  }
 
+  trackPlayer(enemy: Enemy, player: Phaser.Sprite){
+    enemy.track(player);
+  }
+  knockbacked(enemy: Enemy){
+      enemy.knockback();
   }
 }
 
