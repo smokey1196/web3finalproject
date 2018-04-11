@@ -1,9 +1,20 @@
-export default class extends Phaser.Sprite{
+export default class Player extends Phaser.Sprite{
 
+    //Variables
     movementSpeed: number;
     attack: number;
     defence: number;
     cursors: Phaser.CursorKeys;
+    spaceKey: Phaser.Key;
+    playerState: number;
+
+    //Constants
+    PLAYER_STATE = {
+        MOVING_LEFT: 0,
+        MOVNG_RIGHT: 1,
+        MOVING_UP: 2,
+        MOVING_DOWN: 3
+    };
 
     constructor(game: Phaser.Game, x: number, y: number, key: any){
         super(game, x, y, key);
@@ -13,9 +24,14 @@ export default class extends Phaser.Sprite{
         this.attack = 5;
         this.defence = 0;
         this.movementSpeed = 150;
+        this.playerState = 3;
 
         //Player Controls
         this.cursors = this.game.input.keyboard.createCursorKeys();
+        this.spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+        
+
 
         //Player Physics properties
         this.anchor.setTo(0.5);
@@ -34,6 +50,32 @@ export default class extends Phaser.Sprite{
     }
 
     update(){
+
+        this.movePlayer();
+
+        //shooting via the space bar
+        this.spaceKey.onDown.add(this.shoot, this, 0);
+
+        
+
+    }
+
+    shoot(){
+        if(this.playerState === this.PLAYER_STATE.MOVING_LEFT){
+            console.log('shooting left');
+        }
+        if(this.playerState === this.PLAYER_STATE.MOVNG_RIGHT){
+            console.log('shooting right');
+        }
+        if(this.playerState === this.PLAYER_STATE.MOVING_UP){
+            console.log('shooting up');
+        }
+        if(this.playerState === this.PLAYER_STATE.MOVING_DOWN){
+            console.log('shooting down');
+        }
+    }
+
+    movePlayer(){
         //Left and right animation and movement
         if (this.cursors.left.isDown) {
             //for diagonal animations, need to make sure animation doesn't play when up or dowm are held.
@@ -41,6 +83,7 @@ export default class extends Phaser.Sprite{
                 this.animations.play('moveLeft', 15, true);
             }
             this.body.velocity.x = -this.movementSpeed;
+            this.playerState = this.PLAYER_STATE.MOVING_LEFT;
         } else {
             this.animations.stop('moveLeft', true);
         } 
@@ -49,6 +92,7 @@ export default class extends Phaser.Sprite{
                 this.animations.play('moveRight', 15, true);
             }
             this.body.velocity.x = this.movementSpeed;
+            this.playerState = this.PLAYER_STATE.MOVNG_RIGHT;
         } else {
             this.animations.stop('moveRight', true);
         }
@@ -61,23 +105,20 @@ export default class extends Phaser.Sprite{
         if (this.cursors.up.isDown) {
             this.animations.play('moveUp', 15, true);
             this.body.velocity.y = -this.movementSpeed;
-            this.cursors.down.enabled = false;
+            this.playerState = this.PLAYER_STATE.MOVING_UP;
         } else {
             this.animations.stop('moveUp', true);
-            this.cursors.down.enabled = true;
         }
         if (this.cursors.down.isDown) {
             this.body.velocity.y = this.movementSpeed;
             this.animations.play('moveDown', 15, true);
-            this.cursors.up.enabled = false;
+            this.playerState = this.PLAYER_STATE.MOVING_DOWN;
         } else {
             this.animations.stop('moveDown', true);
-            this.cursors.up.enabled = true;
         }
         if(!this.cursors.down.isDown && !this.cursors.up.isDown ||
             this.cursors.down.isDown && this.cursors.up.isDown){
             this.body.velocity.y = 0;
         }
-
     }
 }
