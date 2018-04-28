@@ -9,7 +9,7 @@ export default class Slime extends Enemy{
         this.health = 10;
         this.knockbackSpeed = 200;
         this.movementSpeed = 100;
-        this.vision = 100;
+        this.vision = 300;
 
         //Create animations
         this.animations.add('move', [20,21,22,23,24,25,26,27,28,29]);

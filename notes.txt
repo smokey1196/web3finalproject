@@ -2,3 +2,13 @@ Things to remember to look at:
     1. check if there is a way to make it so a sprite can't see through walls for tracking.
     2. knockback on collision, check how to call the enemy knockback not he global one.
     3. how to call an enemy function from a foreach loop or collision method.
+    4. arrow collision boxes
+
+things to add:
+    1. title screen
+    2. game over and ending screen
+    3. collectables
+    4. boss
+    5. second level
+    6. goal
+    7. more enemy variety

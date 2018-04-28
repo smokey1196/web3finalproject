@@ -56,17 +56,9 @@ export default class MainState extends State {
     this.game.physics.arcade.collide(this.player.playerArrows, this.map.walls, this.arrowWallCollision);
     this.game.physics.arcade.collide(this.player.playerArrows, this.enemyGroup, this.arrowEnemyCollision, null, this);
 
-    //enemy track player
-    if (!this.game.physics.arcade.collide(this.player, this.enemyGroup) && !this.hit){
-        this.enemyGroup.forEach(this.trackPlayer, this, true, this.player);
-        
-    } else {
-        this.hit = true;
-        this.enemyGroup.forEach(this.knockbacked, this, true);
-        this.game.time.events.add(500, function(){
-            this.hit = false;
-        }, this);
-    }
+    this.game.physics.arcade.collide(this.player, this.enemyGroup, this.playerEnemyCollision, null, this);
+
+    this.enemyGroup.forEach(this.trackPlayer, this, true, this.player);
 
   }
   //for debugging
@@ -78,7 +70,7 @@ export default class MainState extends State {
     this.player.playerArrows.forEach(this.game.debug.body, this.game.debug, true);
   }
 
-  trackPlayer(enemy: Enemy, player: Phaser.Sprite){
+  trackPlayer(enemy: Enemy, player: Player){
     enemy.track(player);
   }
   knockbacked(enemy: Enemy){
@@ -95,6 +87,11 @@ export default class MainState extends State {
       enemy.animations.play('death', 25, false, true);
     }
     arrow.kill();
+  }
+  playerEnemyCollision(player: Player, enemy: Enemy){
+    console.log(player.health);
+    player.damage(enemy.attack);
+    enemy.knockback();
   }
 }
 
