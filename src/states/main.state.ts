@@ -6,6 +6,7 @@ import Slime from '../sprites/enemies/slime';
 import EnemyGroup from '../sprites/enemyGroup';
 import Enemy from '../sprites/enemy';
 import Player from '../sprites/player';
+import Arrow from '../sprites/arrow';
 
 // The main state of the game
 export default class MainState extends State {
@@ -52,6 +53,8 @@ export default class MainState extends State {
     this.game.physics.arcade.collide(this.player, this.map.walls);
     this.game.physics.arcade.collide(this.enemyGroup, this.map.walls);
     this.game.physics.arcade.collide(this.enemyGroup, this.enemyGroup);
+    this.game.physics.arcade.collide(this.player.playerArrows, this.map.walls, this.arrowWallCollision);
+    this.game.physics.arcade.collide(this.player.playerArrows, this.enemyGroup, this.arrowEnemyCollision, null, this);
 
     //enemy track player
     if (!this.game.physics.arcade.collide(this.player, this.enemyGroup) && !this.hit){
@@ -72,6 +75,7 @@ export default class MainState extends State {
     //this.game.debug.body(this.enemy1);
     //this.enemyGroup.forEach(this.game.debug.body, this.game.debug, true);
     //this.map.walls.forEach(this.game.debug.body, this.game.debug, true);
+    this.player.playerArrows.forEach(this.game.debug.body, this.game.debug, true);
   }
 
   trackPlayer(enemy: Enemy, player: Phaser.Sprite){
@@ -79,6 +83,18 @@ export default class MainState extends State {
   }
   knockbacked(enemy: Enemy){
       enemy.knockback();
+  }
+  arrowWallCollision(arrow: Arrow){
+    arrow.kill();
+  }
+  arrowEnemyCollision(arrow: Arrow, enemy: Enemy){
+    console.log(enemy.health);
+    console.log(this.player.attack);
+    enemy.health = enemy.health - this.player.attack;
+    if(enemy.health <= 0){
+      enemy.animations.play('death', 25, false, true);
+    }
+    arrow.kill();
   }
 }
 

@@ -5,6 +5,7 @@ export default class Enemy extends Phaser.Sprite{
     defence: number;
     knockbackSpeed: number;
     hit: boolean = false;
+    vision: number;
 
     constructor(game: Phaser.Game, x: number, y: number, key: any){
         super(game, x, y, key);
@@ -14,12 +15,13 @@ export default class Enemy extends Phaser.Sprite{
         this.defence = 0;
         this.movementSpeed = 200;
         this.knockbackSpeed = 300;
+        this.vision = 200;
 
         game.physics.arcade.enable(this);
 
     }
     track(player: Phaser.Sprite){
-        if (Phaser.Math.distance(player.x, player.y, this.x, this.y) < 300 && !this.hit){
+        if (Phaser.Math.distance(player.x, player.y, this.x, this.y) < this.vision && !this.hit){
             this.game.physics.arcade.moveToObject(this, player, this.movementSpeed);
         } else { 
             //make sure the enemy velocity is not being set to zero during knockback

@@ -8,6 +8,7 @@ const enemyImage    = require('assets/images/enemy.png');
 const slimeImage    = require('assets/images/slime-calciumtrice.png');
 const wallImage     = require('assets/images/wall.png');
 const floorImage    = require('assets/images/floor.png');
+const arrowImage    = require('assets/images/arrow.png');
 
 
 // The state for loading core resources for the game
@@ -20,6 +21,7 @@ export default class PreloaderState extends State {
     this.game.load.spritesheet('slime', slimeImage, 32, 33);
     this.game.load.image('wall', wallImage);
     this.game.load.image('floor', floorImage);
+    this.game.load.image('arrow', arrowImage);
   }
 
   create(): void {

@@ -9,9 +9,11 @@ export default class Slime extends Enemy{
         this.health = 10;
         this.knockbackSpeed = 200;
         this.movementSpeed = 100;
+        this.vision = 200;
 
         //Create animations
-        this.animations.add('move', [21,22,23,24,25,26,27,28,29,30]);
+        this.animations.add('move', [20,21,22,23,24,25,26,27,28,29]);
+        this.animations.add('death', [40,41,42,43,44,45,46,47,48,49]);
         this.animations.play('move', 10, true);
 
         //Set Physics
@@ -19,5 +21,6 @@ export default class Slime extends Enemy{
         this.anchor.setTo(0.5);
         this.body.setSize(13, 14, 9, 17);
         this.scale.setTo(2);
+
     }
 }
