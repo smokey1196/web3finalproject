@@ -27,6 +27,8 @@ export default class Map {
     protected numTiles: number = 0;
     roomArray: Array<Room>;
 
+    stairCase: Phaser.Sprite;
+
     constructor(game: Phaser.Game, floorImage: string, wallImage: string,
         minRoomSize: number, maxRoomSize: number, MaxRoomNumber: number){
 
@@ -41,7 +43,7 @@ export default class Map {
 
     }
 
-    //makes the map
+    //makes the starting map (walls and floors)
     generateMap(genStartRoom?: boolean, genLastRoom?: boolean){
 
         this.floors = this.game.add.group();
@@ -160,5 +162,24 @@ export default class Map {
         for (let y = min; y<max+(this.tileSize / 2); y+=(this.tileSize/2)) {
             this.createFloor(x, y);
         } 
+    }
+
+    //create a staircase in the farthest room from the start
+    createStaircase(){
+        let dist: number = 0;
+        let stairRoom: Room;
+
+        for(let i = 1; i < this.roomArray.length; i++){
+            let tempDist = Phaser.Math.distance(this.roomArray[0].centerX, this.roomArray[0].centerY, this.roomArray[i].centerX, this.roomArray[i].centerY);
+            if(tempDist > dist){
+                dist = tempDist;
+                stairRoom = this.roomArray[i];
+            }
+        }
+        this.stairCase = this.game.add.sprite(stairRoom.centerX, stairRoom.centerY, 'stairDown');
+        console.log(stairRoom.centerX + ' ' + stairRoom.centerY);
+        this.stairCase.anchor.setTo(0.5);
+        this.game.physics.arcade.enable(this.stairCase);
+        this.stairCase.body.immovable = true;
     }
 }

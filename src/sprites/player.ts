@@ -12,6 +12,7 @@ export default class Player extends Phaser.Sprite{
     shootingSpeed: number = 15; //frames per second 10 = 1 second
     arrowSpeed: number;
     attackFlag: number = 0; // 0 is not firing, 1 is aiming, and 2 is read to fire, tried with boolean didn't work needed three states.
+    immuneFlag: boolean = false;
 
     playerArrows: Phaser.Group;
 
@@ -30,7 +31,7 @@ export default class Player extends Phaser.Sprite{
         this.health = 100;
         this.attack = 5;
         this.defence = 0;
-        this.movementSpeed = 150;
+        this.movementSpeed = 500;
         this.arrowSpeed = 400;
         this.playerState = this.PLAYER_STATE.MOVING_RIGHT;
 
