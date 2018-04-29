@@ -1,4 +1,5 @@
 import Arrow from './arrow';
+import Item from './item';
 
 export default class Player extends Phaser.Sprite{
 
@@ -11,6 +12,8 @@ export default class Player extends Phaser.Sprite{
     playerState: number;
     shootingSpeed: number = 15; //frames per second 10 = 1 second
     arrowSpeed: number;
+    gold: number;
+    maxHealth: number = 80;
     attackFlag: number = 0; // 0 is not firing, 1 is aiming, and 2 is read to fire, tried with boolean didn't work needed three states.
     immuneFlag: boolean = false;
 
@@ -28,11 +31,12 @@ export default class Player extends Phaser.Sprite{
         super(game, x, y, key, 91);
 
         //Player Stats
-        this.health = 100;
+        this.health = 80;
         this.attack = 5;
         this.defence = 0;
         this.movementSpeed = 500;
         this.arrowSpeed = 400;
+        this.gold = 0;
         this.playerState = this.PLAYER_STATE.MOVING_RIGHT;
 
         //Player Controls
@@ -43,7 +47,7 @@ export default class Player extends Phaser.Sprite{
         this.anchor.setTo(0.5);
         this.game.physics.arcade.enable(this);
         this.game.camera.follow(this);
-        this.body.setSize(25,48,19.5,14);
+        this.body.setSize(25,42,19.5,19);
 
         //create group for arrows and enable physics
         this.playerArrows = this.game.add.group();
@@ -197,6 +201,19 @@ export default class Player extends Phaser.Sprite{
             arrow.changeDir(dir);
         }
         this.playerArrows.add(arrow);
+    }
+
+    collectItem(item: Item){
+        //if item has health value add it to player health
+        this.health += item.data.health ? item.data.health : 0;
+        if(this.health > this.maxHealth){
+            this.health = this.maxHealth;
+        }
+        //if item has gold value add it to player
+        this.gold += item.data.gold ? item.data.gold : 0;
+
+        item.kill();
+
     }
 
     //Move the player and set the playerstate for other methods

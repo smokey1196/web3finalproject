@@ -7,18 +7,29 @@ import EnemyGroup from '../sprites/enemyGroup';
 import Enemy from '../sprites/enemy';
 import Player from '../sprites/player';
 import Arrow from '../sprites/arrow';
+import Item from '../sprites/item';
 
 // The main state of the game
 export default class MainState extends State {
 
   player: Player;
   map: Map;
-  //cursors: Phaser.CursorKeys;
 
   enemy1: Slime;
   enemy2: Phaser.Sprite;
   hit: boolean = false;
   enemyGroup: EnemyGroup;
+  playerStats = {
+    health: 0 as number,
+    attack: 0 as number,
+    defence: 0 as number,
+    arrowSpeed: 0 as number,
+    movementSpeed: 0 as number,
+    gold: 0 as number
+  };
+  level: number = 1;
+  heartLabel: Phaser.Text;
+  goldLabel: Phaser.Text;
 
 
   create(): void {
@@ -31,9 +42,20 @@ export default class MainState extends State {
     this.map = new Map(this.game, 'floor', 'wall', 4, 6, 15);
     this.map.generateMap(true);
     this.map.createStaircase();
+    this.map.createItems();
 
     this.player = new Player(this.game, this.map.roomArray[0].centerX, this.map.roomArray[0].centerY, 'player');
     this.game.add.existing(this.player);
+
+    //if we are past level one set the player stats to what they were on the last level
+    if(this.level > 1){
+      this.player.health = this.playerStats.health;
+      this.player.attack = this.playerStats.attack;
+      this.player.defence = this.playerStats.defence;
+      this.player.arrowSpeed = this.playerStats.arrowSpeed;
+      this.player.movementSpeed = this.playerStats.movementSpeed;
+      this.player.gold = this.playerStats.gold;
+    }
 
     //this was above the map causing the sprites to not show, only 20 hours to figure that out :(
     this.enemyGroup = this.game.add.group();
@@ -44,6 +66,8 @@ export default class MainState extends State {
     this.enemyGroup.add(this.enemy1);
     this.enemyGroup.add(this.enemy2);
 
+    this.initGUI();
+
     //level one
     console.log(this.map.stairCase.centerX);
     //level two
@@ -52,7 +76,7 @@ export default class MainState extends State {
   update(): void {
 
     
-    //Collision between player and walls
+    //Collision
     this.game.physics.arcade.collide(this.player, this.map.walls);
     this.game.physics.arcade.collide(this.enemyGroup, this.map.walls);
     this.game.physics.arcade.collide(this.enemyGroup, this.enemyGroup);
@@ -61,8 +85,12 @@ export default class MainState extends State {
     this.game.physics.arcade.collide(this.player.playerArrows, this.enemyGroup, this.arrowEnemyCollision, null, this);
     this.game.physics.arcade.collide(this.player, this.map.stairCase, this.playerStaircaseCollision, null, this);
 
-    this.game.physics.arcade.collide(this.player, this.enemyGroup, this.playerEnemyCollision, null, this);
+    //item collision
+    this.game.physics.arcade.collide(this.map.stairCase, this.map.items, this.itemStairCollision, null, this);
+    this.game.physics.arcade.collide(this.player, this.map.items, this.playerItemCollision, null, this);
 
+    //enemy collision and tracking
+    this.game.physics.arcade.collide(this.player, this.enemyGroup, this.playerEnemyCollision, null, this);
     this.enemyGroup.forEach(this.trackPlayer, this, true, this.player);
 
   }
@@ -75,7 +103,36 @@ export default class MainState extends State {
     this.player.playerArrows.forEach(this.game.debug.body, this.game.debug, true);
   }
   shutdown(){
-    this.player = this.player;
+    //can't pass sprites between states so need to pass old values and set them on new sprite
+    this.playerStats.health = this.player.health;
+    this.playerStats.attack = this.player.attack;
+    this.playerStats.defence = this.player.defence;
+    this.playerStats.arrowSpeed = this.player.arrowSpeed;
+    this.playerStats.movementSpeed = this.player.movementSpeed;
+    this.playerStats.gold = this.player.gold;
+
+    //increase the level
+    this.level++;
+  }
+
+  initGUI(){
+    let style = {font: '26px Arial', fill: '#fff'};
+    let heartIcon = this.game.add.sprite(10, 10, 'heart');
+    heartIcon.fixedToCamera = true;
+    this.heartLabel = this.game.add.text(50, 10, '0', style);
+    this.heartLabel.fixedToCamera = true;
+
+    let goldIcon = this.game.add.sprite(120, 10, 'gold');
+    goldIcon.fixedToCamera = true;
+    this.goldLabel = this.game.add.text(160, 10, '0', style);
+    this.goldLabel.fixedToCamera = true;
+
+    this.updateGUI();
+  }
+  
+  updateGUI(){
+    this.heartLabel.text = this.player.health.toString();
+    this.goldLabel.text = this.player.gold.toString();
   }
 
   trackPlayer(enemy: Enemy, player: Player){
@@ -113,6 +170,7 @@ export default class MainState extends State {
       });
     }
     enemy.knockback();
+    this.updateGUI();
     
   }
 
@@ -124,6 +182,15 @@ export default class MainState extends State {
 
   fadeComplete(){
     this.game.state.start('main');
+  }
+
+  itemStairCollision(stair: Phaser.Sprite, item: Item){
+    item.kill();
+  }
+
+  playerItemCollision(player: Player, item: Item){
+    player.collectItem(item);
+    this.updateGUI();
   }
 }
 

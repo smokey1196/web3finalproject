@@ -9,6 +9,10 @@ const wallImage     = require('assets/images/wall.png');
 const floorImage    = require('assets/images/floor.png');
 const stairImage    = require('assets/images/stone_stairs_down.png');
 const arrowImage    = require('assets/images/arrow.png');
+const potionImage   = require('assets/images/potion.png');
+const chestImage    = require('assets/images/chest.png');
+const heartImage    = require('assets/images/heart.png');
+const goldImage     = require('assets/images/gold.png');
 
 
 // The state for loading core resources for the game
@@ -22,6 +26,10 @@ export default class PreloaderState extends State {
     this.game.load.image('floor', floorImage);
     this.game.load.image('stairDown', stairImage);
     this.game.load.image('arrow', arrowImage);
+    this.game.load.image('potion', potionImage);
+    this.game.load.image('chest', chestImage);
+    this.game.load.image('heart', heartImage);
+    this.game.load.image('gold', goldImage);
   }
 
   create(): void {

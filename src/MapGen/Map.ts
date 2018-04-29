@@ -8,6 +8,7 @@ Also bits were inspired/taken from
 https://gamedevelopment.tutsplus.com/tutorials/create-a-procedurally-generated-dungeon-cave-system--gamedev-10099 (haxe)
 */
 import Room from './Room';
+import Item from '../sprites/item';
 
 export default class Map {
 
@@ -15,6 +16,8 @@ export default class Map {
 
     floors: Phaser.Group;
     walls: Phaser.Group;
+    items: Phaser.Group;
+
     protected floorImage: string;
     protected wallImage: string;
 
@@ -48,6 +51,7 @@ export default class Map {
 
         this.floors = this.game.add.group();
         this.walls = this.game.add.group();
+        this.items = this.game.add.group();
         this.walls.enableBody = true;
 
         let lastRoomCoords = { x: 0, y: 0 };
@@ -177,9 +181,35 @@ export default class Map {
             }
         }
         this.stairCase = this.game.add.sprite(stairRoom.centerX, stairRoom.centerY, 'stairDown');
-        console.log(stairRoom.centerX + ' ' + stairRoom.centerY);
         this.stairCase.anchor.setTo(0.5);
         this.game.physics.arcade.enable(this.stairCase);
         this.stairCase.body.immovable = true;
+    }
+
+    createItems(){
+        //create an item randomly in each room that is not the first or second
+        for(let i = 1; i < this.roomArray.length; i++){
+            //get random offset
+            let offsetX = this.getRandom(-60, 60);
+            let offsetY = this.getRandom(-60, 60);
+
+            let itemType: number = this.getRandom(0,2);
+            let item: Item;
+
+            //place objects in center with offset
+            switch (itemType){
+                
+                case 0: //gold
+                    item = new Item(this.game, this.roomArray[i].centerX + offsetX, this.roomArray[i].centerY + offsetY, 'chest', {gold: 10});
+                    break;
+                
+                case 1: //potion
+                    item = new Item(this.game, this.roomArray[i].centerX + offsetX, this.roomArray[i].centerY + offsetY, 'potion', {health: 10});
+                    break;
+                default:
+            }
+
+            this.items.add(item);
+        }
     }
 }
