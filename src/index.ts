@@ -10,6 +10,7 @@ import 'styles/style.styl'; // Registering styles for the page; They will automa
 import BootState        from './states/boot.state';
 import PreloaderState   from './states/preloader.state';
 import MainState        from './states/main.state';
+import GameOverState    from './states/gameOver.state';
 
 
 // The main class of our application
@@ -20,6 +21,7 @@ export default class App extends Phaser.Game {
     this.state.add('boot', BootState);
     this.state.add('preloader', PreloaderState);
     this.state.add('main', MainState); // Add `main` state into game
+    this.state.add('gameover', GameOverState);
 
     this.state.start('boot'); // Initialize and start `boot` state
   }

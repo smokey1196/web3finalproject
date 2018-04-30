@@ -3,11 +3,12 @@
 import State from './state';
 import Map from '../MapGen/Map';
 import Slime from '../sprites/enemies/slime';
-import EnemyGroup from '../sprites/enemyGroup';
 import Enemy from '../sprites/enemy';
 import Player from '../sprites/player';
 import Arrow from '../sprites/arrow';
 import Item from '../sprites/item';
+import Bat from '../sprites/enemies/bat';
+import Room from '../MapGen/Room';
 
 // The main state of the game
 export default class MainState extends State {
@@ -15,10 +16,9 @@ export default class MainState extends State {
   player: Player;
   map: Map;
 
-  enemy1: Slime;
-  enemy2: Phaser.Sprite;
+  enemy: Enemy;
   hit: boolean = false;
-  enemyGroup: EnemyGroup;
+  enemyGroup: Phaser.Group;
   playerStats = {
     health: 0 as number,
     attack: 0 as number,
@@ -31,17 +31,18 @@ export default class MainState extends State {
   heartLabel: Phaser.Text;
   goldLabel: Phaser.Text;
 
+  init(level?: number){
+    if(level){
+      this.level = 1;
+    }
+  }
 
   create(): void {
-    // Phaser supports some physical engines (p2, box2d, ninja and arcate).
-    // For our game, we don't need a strong physical simulation, so we'll choose
-    // `arcade` model.
     this.game.world.setBounds(0, 0, 3200, 2400);
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.map = new Map(this.game, 'floor', 'wall', 4, 6, 15);
     this.map.generateMap(true);
-    this.map.createStaircase();
     this.map.createItems();
 
     this.player = new Player(this.game, this.map.roomArray[0].centerX, this.map.roomArray[0].centerY, 'player');
@@ -60,17 +61,48 @@ export default class MainState extends State {
     //this was above the map causing the sprites to not show, only 20 hours to figure that out :(
     this.enemyGroup = this.game.add.group();
 
-    this.enemy1 = new Slime(this.game, this.map.roomArray[0].centerX + 150, this.map.roomArray[0].centerY, 'slime', false); 
-    this.enemy2 = new Slime(this.game, this.map.roomArray[1].centerX, this.map.roomArray[1].centerY - 100, 'slime', false); 
+    for(let i = 1; i < this.map.roomArray.length; i++){
+      let ran = Phaser.Math.between(0, 2);
+      
+      switch (ran){
+        case 0:
+          this.enemy = new Bat(this.game, this.map.roomArray[i].centerX, this.map.roomArray[i].centerY,  'bat');
+          break; 
+        case 1:
+          this.enemy = new Slime(this.game, this.map.roomArray[i].centerX, this.map.roomArray[i].centerY, 'slime', 'blue'); 
+          break;
+        case 2:
+          this.enemy = new Slime(this.game, this.map.roomArray[i].centerX, this.map.roomArray[i].centerY, 'slime', 'green');
+          break; 
+        default:
+      }
+      this.enemyGroup.add(this.enemy);
+    }
 
-    this.enemyGroup.add(this.enemy1);
-    this.enemyGroup.add(this.enemy2);
-
-    this.initGUI();
+    
 
     //level one
-    console.log(this.map.stairCase.centerX);
-    //level two
+    if(this.level < 2){
+      this.map.createStaircase();
+    } else {
+      //place the boss
+      let dist: number = 0;
+      let bossRoom: Room;
+
+      for(let i = 1; i < this.map.roomArray.length; i++){
+        let tempDist = Phaser.Math.distance(this.map.roomArray[0].centerX, this.map.roomArray[0].centerY, this.map.roomArray[i].centerX, this.map.roomArray[i].centerY);
+        if(tempDist > dist){
+          dist = tempDist;
+          bossRoom = this.map.roomArray[i];
+        }
+      }
+      
+      let boss = new Slime(this.game, bossRoom.centerX, bossRoom.centerY, 'slime', 'boss');
+      this.enemyGroup.add(boss);
+    }
+
+    this.initGUI();
+    
    
   }
   update(): void {
@@ -100,7 +132,7 @@ export default class MainState extends State {
     //this.game.debug.body(this.enemy1);
     //this.enemyGroup.forEach(this.game.debug.body, this.game.debug, true);
     //this.map.walls.forEach(this.game.debug.body, this.game.debug, true);
-    this.player.playerArrows.forEach(this.game.debug.body, this.game.debug, true);
+    //this.player.playerArrows.forEach(this.game.debug.body, this.game.debug, true);
   }
   shutdown(){
     //can't pass sprites between states so need to pass old values and set them on new sprite
@@ -148,12 +180,10 @@ export default class MainState extends State {
   }
 
   arrowEnemyCollision(arrow: Arrow, enemy: Enemy){
-    console.log(enemy.health);
-    console.log(this.player.attack);
     enemy.health = enemy.health - this.player.attack;
     enemy.knockback();
     if(enemy.health <= 0){
-      enemy.animations.play('death', 25, false, true);
+      enemy.animations.play('death', 20, false, true);
     }
     arrow.kill();
   }
@@ -171,13 +201,21 @@ export default class MainState extends State {
     }
     enemy.knockback();
     this.updateGUI();
+    if(player.health <= 0){
+      //this.game.add.tween(this.game.world).to({alpha: 0}, 500, 'Linear', true).onComplete.addOnce(this.gameOverScreen, this);
+      this.camera.fade(0x000000, 500);
+      this.camera.onFadeComplete.addOnce(this.gameOverScreen, this);
+    }
     
   }
 
+  gameOverScreen(){
+    this.game.state.start('gameover');
+  }
+
   playerStaircaseCollision(){
-    console.log('test');
     this.camera.fade(0x000000, 2000);
-    this.camera.onFadeComplete.add(this.fadeComplete, this);
+    this.camera.onFadeComplete.addOnce(this.fadeComplete, this);
   }
 
   fadeComplete(){

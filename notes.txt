@@ -6,9 +6,9 @@ Things to remember to look at:
 
 things to add:
     1. title screen
-    2. game over and ending screen
-    3. collectables
-    4. boss
-    5. second level
+    2. --game over and ending screen
+    3. --collectables
+    4. --boss
+    5. --second level
     6. goal
     7. more enemy variety

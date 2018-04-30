@@ -34,7 +34,7 @@ export default class Player extends Phaser.Sprite{
         this.health = 80;
         this.attack = 5;
         this.defence = 0;
-        this.movementSpeed = 500;
+        this.movementSpeed = 220;
         this.arrowSpeed = 400;
         this.gold = 0;
         this.playerState = this.PLAYER_STATE.MOVING_RIGHT;
@@ -156,32 +156,25 @@ export default class Player extends Phaser.Sprite{
     createArrow(dir: string){
         //if an arrow already exists but is dead get that one
         let arrow: Arrow = this.playerArrows.getFirstExists(false);
-        console.log('creating arrow!');
         if(!arrow){
             //else create a new one
             switch (dir){
                 case 'l':
                     arrow = new Arrow(this.game, this.left, this.y, dir, this.arrowSpeed);
-                    console.log('creating new arrow! l');
                     break;
                 case 'r':
                     arrow = new Arrow(this.game, this.right, this.y, dir, this.arrowSpeed);
-                    console.log('creating new arrow! r');
                     break;
                 case 'u':
                     arrow = new Arrow(this.game, this.x, this.top, dir, this.arrowSpeed);
-                    console.log('creating new arrow! u');
                     break;
                 case 'd':
                     arrow = new Arrow(this.game, this.x, this.bottom, dir, this.arrowSpeed);
-                    console.log('creating new arrow! d');
                     break;
                 default:
-                console.log('No arrow');
             }
         } else{
             //reset position and direction
-            console.log('reviving arrow');
             switch (dir){
                 case 'l':
                     arrow.reset(this.left, this.y);

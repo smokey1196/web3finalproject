@@ -76,7 +76,6 @@ export default class Map {
 
             //Generate the first room so that nothing overlaps it
             if (genStartRoom && r === 0){
-                console.log('generating a starting room!');
                 w = this.maxRoomSize * this.tileSize;
                 h = this.maxRoomSize * this.tileSize;
                 
@@ -86,14 +85,13 @@ export default class Map {
             
             //Generate random coords for the other rooms
             } else {
-                //console.log('is false');
                 w = this.getRandom(this.minRoomSize, this.maxRoomSize) * this.tileSize;
                 h = this.getRandom(this.minRoomSize, this.maxRoomSize) * this.tileSize;
     
                 x = this.getRandom(1, ((this.game.world.width) / this.tileSize) - (w/this.tileSize + 1)) * this.tileSize;
                 y = this.getRandom(1, ((this.game.world.height) / this.tileSize) - (w/this.tileSize + 1)) * this.tileSize;
 
-                //console.log(this.getRandom(1, ((this.game.world.width) / 16) - (w/16 + 1)));
+        
             }
             
             //Create the room then add it to rooms array so it can be referenced later
@@ -107,7 +105,6 @@ export default class Map {
                 this.createRoom(x, x+w, y, y+h);
                 this.roomArray.push(room);
                 r++;
-                //console.log(room); 
 
                 if (this.numRooms !== 0) {            
                     let new_x = Phaser.Math.snapToFloor(x + (w/2), this.tileSize);
@@ -118,7 +115,6 @@ export default class Map {
                     
                     this.createHTunnel(prev_x, new_x, prev_y);
                     this.createVTunnel(prev_y, new_y, new_x);
-                    //console.log(new_x, new_y, prev_x, prev_y);
                 } 
                 
                 lastRoomCoords = { x: x + (w/2), y: y + (h/2) };

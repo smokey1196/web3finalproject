@@ -11,7 +11,7 @@ export default class Enemy extends Phaser.Sprite{
         super(game, x, y, key);
 
         this.health = 100;
-        this.attack = 5;
+        this.attack = 10;
         this.defence = 0;
         this.movementSpeed = 200;
         this.knockbackSpeed = 300;
